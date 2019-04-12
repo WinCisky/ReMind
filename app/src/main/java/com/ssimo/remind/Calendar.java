@@ -1,8 +1,10 @@
 package com.ssimo.remind;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.bottomappbar.BottomAppBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -14,8 +16,10 @@ import android.widget.EditText;
 
 public class Calendar extends Fragment {
 
+    String common;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //clear view
         if (container != null) {
@@ -23,29 +27,14 @@ public class Calendar extends Fragment {
         }
         View v = inflater.inflate(R.layout.fragment_note_desc, container, false);
 
-        //final FloatingActionButton fab = getView().findViewById(R.id.fab);
-        EditText et = v.findViewById(R.id.note_description);
-
-        //et.setOnFocusChangeListener(new HideMe());
+        v.findViewById(R.id.note_title).setTransitionName(common);
 
         // Inflate the layout for this fragment
         return v;
     }
 
-}
-
-class HideMe implements View.OnFocusChangeListener {
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        FloatingActionButton fab = v.getRootView().findViewById(R.id.fab);
-        BottomAppBar bab = v.getRootView().findViewById(R.id.bottom_app_bar);
-        if(hasFocus){
-
-            fab.hide();
-        }else {
-
-            fab.show();
-        }
+    public void SetCommoObj(String s){
+        common = s;
     }
+
 }
