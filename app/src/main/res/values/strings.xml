@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">ReMind</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_mail">Mail</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_archieve">Archieve</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis facilisis diam, sed pretium neque vehicula id. Vivamus vehicula, nibh id ullamcorper bibendum, metus erat fringilla ligula, eget vehicula sem dui eu erat. Suspendisse porttitor tortor at viverra commodo. Curabitur nec velit pretium tellus fermentum consequat a at sapien. Phasellus at mi nec nisl condimentum scelerisque. Donec sed nulla est. Vivamus non pretium augue, et placerat leo. Maecenas a velit tempus, viverra eros ut, tempor magna. Pellentesque placerat nulla at risus finibus tempus. Morbi pellentesque libero lacus, vel egestas justo elementum eu. Donec arcu justo, fermentum eget tellus in, vehicula pellentesque lorem.
+
+Aenean ut bibendum metus. Phasellus iaculis iaculis nulla ut lacinia. Maecenas ullamcorper molestie pellentesque. Suspendisse est metus, congue in arcu et, ultrices ornare nunc. Pellentesque efficitur consectetur mi, nec mattis metus faucibus sed. Maecenas scelerisque sem sit amet varius posuere. Donec et ullamcorper orci. Suspendisse vel euismod elit. In maximus neque diam. Integer interdum, lorem sed pulvinar porta, neque enim varius quam, in consectetur neque enim dictum mi. Proin a ex ut nisl ultricies elementum sit amet non nisi. Sed ut accumsan nisi. Donec dapibus, tortor a tempor aliquet, ex ante venenatis sapien, nec cursus urna ex at elit. Fusce eu dignissim lacus. Nulla a rutrum enim. Aenean ut sapien id arcu facilisis commodo vel a turpis.
+
+Donec bibendum consequat nisl sit amet iaculis. Nam tincidunt tincidunt ante quis vestibulum. Integer diam nisl, vestibulum nec quam a, ultrices pretium erat. Cras pulvinar ligula nec velit convallis pulvinar. Aliquam commodo justo ligula, eget consectetur sem imperdiet id. Maecenas nec leo orci. Nam sed venenatis neque. Aenean ut sem at mi viverra dictum in eget velit. Curabitur tempus arcu nec eleifend fermentum. Ut sollicitudin sodales convallis.
+
+Morbi a nisl vitae purus efficitur condimentum. Vestibulum vel mollis tellus. Vestibulum sodales laoreet dolor ac eleifend. Curabitur dui augue, placerat at accumsan ut, consectetur et magna. Ut vestibulum dui odio, at efficitur metus porta et. Donec consectetur non nisi congue commodo. Duis consequat varius metus eget maximus. Proin nec lorem blandit, pulvinar augue eget, vestibulum erat.
+
+Vivamus vehicula felis vel velit elementum viverra. Pellentesque nec mi aliquam, consectetur mi quis, sollicitudin felis. Aenean dictum purus et turpis mollis faucibus. Curabitur egestas ligula odio, non mattis quam facilisis nec. Quisque et felis magna. Donec egestas, arcu eget interdum dapibus, sem sapien dapibus nunc, a venenatis metus eros nec risus. Aliquam quam dui, molestie vitae metus quis, mattis imperdiet massa. Pellentesque non velit et neque rhoncus finibus ut eu lacus.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
