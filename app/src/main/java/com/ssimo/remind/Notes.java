@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -27,13 +28,12 @@ public class Notes extends Fragment {
         v = inflater.inflate(R.layout.fragment_notes, container, false);
         myRecycleView = v.findViewById(R.id.my_recycler_view);
 
-
+        //TODO: read info from local DB
         for(int i = 0; i < 30; i++){
             memo_texts.add("memo text value is : " + i);
             memo_images.add("https://picsum.photos/200/200/?image="+i);
         }
 
-        // specify an adapter (see also next example)
         MyAdapter mAdapter = new MyAdapter(getContext(), memo_texts, memo_images);
         myRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
         myRecycleView.setAdapter(mAdapter);

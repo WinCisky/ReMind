@@ -1,6 +1,7 @@
 package com.ssimo.remind;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -63,18 +64,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
         // I'm using holder.getAdapterPosition() instead of position,
         // need to check if it works with new notes and notes re-arrangement
 
-        Log.d("mydebug","onBindViewHolder: called");
+        Log.d("TEST","onBindViewHolder: called");
 
         //set the text
         holder.textView.setText(mDatasetTexts.get(holder.getAdapterPosition()));
-        holder.textView.setTransitionName(String.valueOf(holder.getAdapterPosition()));
 
         //set the image (load from url)
         Glide.with(mContext)
@@ -89,12 +89,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 //change bottom nav bar icons
                 MainActivity mainActivity = (MainActivity) mContext;
                 mainActivity.ChangeBotBar();
-                //mainActivity.performTransition(holder.getAdapterPosition());
 
                 //change fragment
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                Calendar c = new Calendar();
-                activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment, c).addToBackStack(null).commit();
+                NoteEditor noteEditor = new NoteEditor();
+                Bundle bundle = new Bundle();
+                bundle.putInt("ID", holder.getAdapterPosition()); //TODO: check if position is correct or if I need to use holder.getAdapterPosition() instead
+                noteEditor.setArguments(bundle);
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment, noteEditor).addToBackStack(null).commit();
             }
         });
 

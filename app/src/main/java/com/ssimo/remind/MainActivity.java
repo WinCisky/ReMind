@@ -1,19 +1,19 @@
 package com.ssimo.remind;
 
-import android.app.ActionBar;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.behavior.HideBottomViewOnScrollBehavior;
 import android.support.design.bottomappbar.BottomAppBar;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.transition.Fade;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,14 +24,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.Toast;
+import android.widget.ImageButton;
+
+import java.util.Objects;
 
 interface OnKeyboardVisibilityListener {
     void onVisibilityChanged(boolean visible);
 }
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener , OnKeyboardVisibilityListener{
+        implements
+        NavigationView.OnNavigationItemSelectedListener ,
+        OnKeyboardVisibilityListener,
+        View.OnClickListener,
+        FragmentManager.OnBackStackChangedListener{
+
+    FloatingActionButton fab;
+    Toolbar toolbarTop, toolbarBot;
+    DrawerLayout drawer;
+    NavigationView navigationView;
+    ActionBar actionBar;
+    ImageButton back;
+    CoordinatorLayout.LayoutParams layoutParams;
+    CoordinatorLayout.Behavior behavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,19 +55,52 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         //top bar
-        Toolbar toolbarTop = findViewById(R.id.toolbar);
-        toolbarTop.setTitle("Tasks");
+        toolbarTop = findViewById(R.id.toolbar);
+        //toolbarTop.setTitle("Tasks");
         toolbarTop.setTitleMarginStart((toolbarTop.getTitleMarginEnd()+toolbarTop.getTitleMarginStart()) /2);
 
+        //back button on toolbar top
+        back = findViewById(R.id.back);
+        back.setOnClickListener(this);
+
         //bot bar
-        Toolbar toolbarBot = findViewById(R.id.bottom_app_bar);
+        toolbarBot = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(toolbarBot);
+        actionBar = getSupportActionBar();
+
+        //get original bot bar behaviour
+        layoutParams = (CoordinatorLayout.LayoutParams) toolbarBot.getLayoutParams();
+        behavior = layoutParams.getBehavior();
 
         //Floating Action Button
-        final FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(this);
+
+
+        //Left menu
+        drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbarBot, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        //check for keyboard visibility
+        setKeyboardVisibilityListener(this);
+
+        //back stack listener
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
+
+    }
+
+
+    //Click listener (just used by fab
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.fab:
                 fab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
                     @Override
                     public void onShown(FloatingActionButton fab) {
@@ -62,50 +110,69 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onHidden(FloatingActionButton fab) {
                         super.onHidden(fab);
-                        ChangeFragment();
-                        //ChangeBar();
+
+                        ShowBottomAppBar(true);
+                        NewNote();
+                        ChangeBar(1);
+
                         fab.show();
                     }
                 });
-            }
-        });
-
-
-        //Left menu
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbarBot, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        //check for keyboard visibility
-        setKeyboardVisibilityListener(this);
-
-
+                break;
+            case R.id.back:
+                getSupportFragmentManager().popBackStack();
+                break;
+        }
     }
 
+    //the backstack has changed
+    @Override
+    public void onBackStackChanged() {
+        int backCount = getSupportFragmentManager().getBackStackEntryCount();
+        if (backCount == 0){
+            //TODO: set the bot app bar icons back to the original ones
+            //set original behaviour
+            layoutParams.setBehavior(new HideBottomViewOnScrollBehavior<>());
+            //hide back button
+            back.setVisibility(View.GONE);
+            //TODO: I need to update the recycleview if there has been changes
+        }
+    }
+
+    //Hide bottom app bar when the user is writing and show when the user is no longer writing
     @Override
     public void onVisibilityChanged(boolean visible) {
-        Toast.makeText(MainActivity.this, visible ? "Keyboard is active" : "Keyboard is Inactive", Toast.LENGTH_SHORT).show();
 
-        ActionBar ab = getActionBar();
-        FloatingActionButton fab = findViewById(R.id.fab);
         if(visible){
-            if(ab!=null)
-                ab.hide();
-            if(fab!=null)
+            if(toolbarBot != null && actionBar != null){
+                ShowBottomAppBar(false);
+            }
+            if(fab != null)
                 fab.hide();
         }else{
-            if(ab!=null)
-                ab.show();
-            if(fab!=null)
+            if(toolbarBot != null && actionBar != null){
+                ShowBottomAppBar(true);
+            }
+            if(fab != null)
                 fab.show();
         }
     }
 
+    //Show or hide the bottom app bar
+    public void ShowBottomAppBar(boolean show){
+        //custom behaviour to show/hide the bottom bar
+        layoutParams.setBehavior(new CustomHideBottomViewOnScrollBehavior<>());
+        if(show){
+            ((CustomHideBottomViewOnScrollBehavior) Objects.requireNonNull(layoutParams.getBehavior())).slideUp(findViewById(R.id.bottom_app_bar));
+            actionBar.show();
+        }else{
+            ((CustomHideBottomViewOnScrollBehavior) Objects.requireNonNull(layoutParams.getBehavior())).slideDown(findViewById(R.id.bottom_app_bar));
+            actionBar.hide();
+        }
+    }
 
+
+    //Creates a listener for the keyboard input (checks if the screen is occupated by the amount required by the keyboard)
     private void setKeyboardVisibilityListener(final OnKeyboardVisibilityListener onKeyboardVisibilityListener) {
         final View parentView = ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
         parentView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -123,7 +190,6 @@ public class MainActivity extends AppCompatActivity
                 boolean isShown = heightDiff >= estimatedKeyboardHeight;
 
                 if (isShown == alreadyOpen) {
-                    Log.i("Keyboard state", "Ignoring global layout change...");
                     return;
                 }
                 alreadyOpen = isShown;
@@ -133,34 +199,42 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-    public void ChangeFragment(){
+    //New note, no need to add Bundle info
+    public void NewNote(){
         android.support.v4.app.FragmentManager man = getSupportFragmentManager();
         FragmentTransaction transaction = man.beginTransaction();
-        Calendar c = new Calendar();
-        transaction.replace(R.id.fragment, c);
+        NoteEditor noteEditor = new NoteEditor();
+        transaction.replace(R.id.fragment, noteEditor);
         transaction.addToBackStack(null);
         transaction.commit();
     }
 
 
 
-    public void ChangeBar(){
-        BottomAppBar bottom_app_bar = findViewById(R.id.bottom_app_bar);
-        // Hide navigation drawer icon
-        bottom_app_bar.setNavigationIcon(null);
-        // Move FAB from the center of BottomAppBar to the end of it
-        bottom_app_bar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
-        // Replace the action menu
-        bottom_app_bar.replaceMenu(R.menu.main);
-        // Change FAB icon
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_reply_white_24dp));
-        fab.show();
+    //Change the bot bar icons to edit mode
+    public void ChangeBar(int type){
+        switch (type){
+            case 1: //Note editor
+                // Hide navigation drawer icon
+                toolbarBot.setNavigationIcon(null);
+                // Move FAB from the center of BottomAppBar to the end of it
+                ((BottomAppBar)toolbarBot).setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                // Replace the action menu
+                ((BottomAppBar)toolbarBot).replaceMenu(R.menu.main);
+                // Change FAB icon
+                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_reply_white_24dp));
+                //show back button (it was gone)
+                back.setVisibility(View.VISIBLE);
+                break;
+            case 2: //Calendar
+                break;
+            default: //Basic
+                break;
+        }
     }
 
+    //Changes the bot bar to edit mode
     public void ChangeBotBar(){
-        FloatingActionButton fab = findViewById(R.id.fab);
         fab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
             @Override
             public void onShown(FloatingActionButton fab) {
@@ -170,55 +244,16 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onHidden(FloatingActionButton fab) {
                 super.onHidden(fab);
-                //ChangeFragment();
-                ChangeBar();
+                ShowBottomAppBar(true);
+                ChangeBar(1);
                 fab.show();
             }
         });
     }
 
-    //perform transition animations and should set the values for the note
-    private void performTransition(int position)
-    {
-
-        if (isDestroyed())
-        {
-            return;
-        }
-        Fragment previousFragment = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        Fragment nextFragment = new Calendar();
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-        // 1. Exit for Previous Fragment
-        Fade exitFade = new Fade();
-        if (previousFragment != null) {
-            previousFragment.setExitTransition(exitFade);
-        }
-
-        // 3. Enter Transition for New Fragment
-        Fade enterFade = new Fade();
-        enterFade.setStartDelay(exitFade.getDuration());
-        nextFragment.setEnterTransition(enterFade);
-
-        fragmentTransaction.replace(R.id.fragment, nextFragment);
-        fragmentTransaction.commitAllowingStateLoss();
-    }
-
-
-
-
-
-
-
-
-
-
-
-
+    //intercepts the back press and closes the drawer if it's open
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -226,8 +261,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    //Bot menu
-
+    //inflates the bot menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -235,23 +269,25 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //listener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            case R.id.action_settings:
+                return true;
+            default:
+                Log.d("TEST", String.valueOf(item.getItemId()));
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    //Left hidden menu
-
+    //Left menu (the hidden one)
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -268,7 +304,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
 
-            Toast.makeText(this, "Share!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Share!", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_send) {
 
@@ -278,47 +314,4 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-
-    /*
-    void populateRecycleView(){
-
-        //Recycle view
-        RecyclerView recyclerView = findViewById(R.id.my_recycler_view);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        //some sample text and images
-        for(int i = 0; i < 30; i++){
-            memo_texts.add("memo text value is : " + String.valueOf(i));
-            memo_images.add("https://picsum.photos/200/200/?image="+i);
-        }
-
-        // specify an adapter (see also next example)
-        MyAdapter mAdapter = new MyAdapter(this, memo_texts, memo_images);
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-    }
-
-*/
-    /*
-    void refreshRecycleView(){
-        RecyclerView recyclerView = findViewById(R.id.my_recycler_view);
-        MyAdapter mAdapter = new MyAdapter(this, memo_texts, memo_images);
-        recyclerView.swapAdapter(mAdapter,true);
-        //recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-    */
-
-
-
 }

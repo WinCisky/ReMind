@@ -16,7 +16,7 @@ public class Calendar extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        v = inflater.inflate(R.layout.fragment_note_desc, container, false);
+        v = inflater.inflate(R.layout.fragment_calendar, container, false);
 
         return v;
     }

@@ -12,7 +12,6 @@
     <string name="sample_image_description">This is a sample image</string>
     <string name="text_sample">Your note title is…</string>
     <string name="lorem_ipsum">You should place your note here…</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="back">Back</string>
 </resources>
