@@ -3,27 +3,50 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/parent_layout"
-    android:padding="15dp">
+    android:padding="5dp">
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/image_list"
-        android:src="@drawable/ic_menu_camera"
-        android:contentDescription="@string/sample_image_description"/>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_gravity="top"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/list_text"
-        android:layout_alignBottom="@+id/image_list"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"
-        android:layout_toEndOf="@+id/image_list"
-        android:gravity="center"
-        android:text="@string/text_sample"
-        android:textAlignment="center"/>
+        android:layout_margin="5sp"
+        card_view:cardCornerRadius="4dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10sp">
+
+            <TextView
+                android:id="@+id/remaining_days"
+                android:layout_width="50sp"
+                android:layout_height="50sp"
+                android:gravity="center"
+                android:text="@string/_42"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/list_text"
+                android:layout_alignBottom="@+id/remaining_days"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:layout_toEndOf="@+id/remaining_days"
+                android:gravity="center"
+                android:text="@string/text_sample"
+                android:textAlignment="center"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+
+
 
 </RelativeLayout>

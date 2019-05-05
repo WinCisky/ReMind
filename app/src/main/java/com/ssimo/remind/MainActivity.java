@@ -1,6 +1,7 @@
 package com.ssimo.remind;
 
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     ImageButton back;
     CoordinatorLayout.LayoutParams layoutParams;
     CoordinatorLayout.Behavior behavior;
+    Drawable defaultNavigationIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,9 +132,8 @@ public class MainActivity extends AppCompatActivity
     public void onBackStackChanged() {
         int backCount = getSupportFragmentManager().getBackStackEntryCount();
         if (backCount == 0){
-            //TODO: set the bot app bar icons back to the original ones
-            //set original behaviour
-            layoutParams.setBehavior(new HideBottomViewOnScrollBehavior<>());
+            //set the bottom bar ast the original one
+            ChangeBotBar(0);
             //hide back button
             back.setVisibility(View.GONE);
             //TODO: I need to update the recycleview if there has been changes
@@ -158,6 +159,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //TODO: bottom app bar isn't showing if it was hidden
     //Show or hide the bottom app bar
     public void ShowBottomAppBar(boolean show){
         //custom behaviour to show/hide the bottom bar
@@ -215,6 +217,9 @@ public class MainActivity extends AppCompatActivity
     public void ChangeBar(int type){
         switch (type){
             case 1: //Note editor
+                if(defaultNavigationIcon == null)
+                    //get default navigation icon
+                    defaultNavigationIcon = toolbarBot.getNavigationIcon();
                 // Hide navigation drawer icon
                 toolbarBot.setNavigationIcon(null);
                 // Move FAB from the center of BottomAppBar to the end of it
@@ -222,19 +227,24 @@ public class MainActivity extends AppCompatActivity
                 // Replace the action menu
                 ((BottomAppBar)toolbarBot).replaceMenu(R.menu.main);
                 // Change FAB icon
-                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_reply_white_24dp));
+                fab.setImageResource(R.drawable.ic_reply_white_24dp);
                 //show back button (it was gone)
                 back.setVisibility(View.VISIBLE);
                 break;
             case 2: //Calendar
                 break;
             default: //Basic
+                toolbarBot.setNavigationIcon(defaultNavigationIcon);
+                ((BottomAppBar)toolbarBot).setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
+                ((BottomAppBar)toolbarBot).replaceMenu(R.menu.bottom_bar_right);
+                fab.setImageResource(R.drawable.ic_add_white_24dp);
+                back.setVisibility(View.GONE);
                 break;
         }
     }
 
     //Changes the bot bar to edit mode
-    public void ChangeBotBar(){
+    public void ChangeBotBar(final int type){
         fab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
             @Override
             public void onShown(FloatingActionButton fab) {
@@ -244,8 +254,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onHidden(FloatingActionButton fab) {
                 super.onHidden(fab);
-                ShowBottomAppBar(true);
-                ChangeBar(1);
+                //ShowBottomAppBar(showBotAppBar);
+                layoutParams.setBehavior(new HideBottomViewOnScrollBehavior());
+                ChangeBar(type);
                 fab.show();
             }
         });

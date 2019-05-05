@@ -14,4 +14,9 @@
     <string name="lorem_ipsum">You should place your note here…</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="back">Back</string>
+    <string name="tomorrow">I\'ll do it tomorrow</string>
+    <string name="completed">I did it!</string>
+    <string name="delete">Forget it</string>
+    <string name="another_note">Press on + icon to add another note</string>
+    <string name="_42">42</string>
 </resources>
