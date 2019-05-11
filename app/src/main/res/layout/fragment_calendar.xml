@@ -3,12 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Calendar">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".CalendarFragment"
+    android:background="@color/white">
 
-    <CalendarView
+    <com.applandeo.materialcalendarview.CalendarView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        
-    </CalendarView>
+        android:layout_height="match_parent"
+        android:id="@+id/calendar_view"
+        app:headerColor="@color/colorPrimaryDark"
+        app:todayLabelColor="@color/colorAccent"
+        app:disabledDaysLabelsColor="@color/colorAccent">
+
+    </com.applandeo.materialcalendarview.CalendarView>
+
 
 </FrameLayout>

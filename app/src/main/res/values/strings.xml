@@ -6,6 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="settings">Application\'s settings</string>
     <string name="action_mail">Mail</string>
     <string name="action_delete">Delete</string>
     <string name="action_archieve">Archieve</string>
@@ -19,4 +20,10 @@
     <string name="delete">Forget it</string>
     <string name="another_note">Press on + icon to add another note</string>
     <string name="_42">42</string>
+    <string name="action_calendar">Calendar</string>
+    <string name="action_graphs">Graphs</string>
+    <string name="date">Date</string>
+    <string name="priority">Priority</string>
+    <string name="taskclass">TaskClass</string>
+    <string name="sort">Sort</string>
 </resources>

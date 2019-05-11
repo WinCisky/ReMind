@@ -6,4 +6,5 @@
     <color name="colorAdditional">#038C8C</color>
     <color name="lightColor">#0D03A696</color>
     <color name="white">#EAEBED</color>
+    <color name="black">#000</color>
 </resources>

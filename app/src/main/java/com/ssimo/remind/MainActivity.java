@@ -10,6 +10,7 @@ import android.support.design.bottomappbar.BottomAppBar;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbarBot, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -93,7 +95,6 @@ public class MainActivity extends AppCompatActivity
 
         //back stack listener
         getSupportFragmentManager().addOnBackStackChangedListener(this);
-
     }
 
 
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity
                         super.onHidden(fab);
 
                         ShowBottomAppBar(true);
-                        NewNote();
+                        NewFragment(new NoteEditor());
                         ChangeBar(1);
 
                         fab.show();
@@ -162,6 +163,8 @@ public class MainActivity extends AppCompatActivity
     //TODO: bottom app bar isn't showing if it was hidden
     //Show or hide the bottom app bar
     public void ShowBottomAppBar(boolean show){
+        //copy the original behaviour
+        CoordinatorLayout.Behavior b = layoutParams.getBehavior();
         //custom behaviour to show/hide the bottom bar
         layoutParams.setBehavior(new CustomHideBottomViewOnScrollBehavior<>());
         if(show){
@@ -171,6 +174,8 @@ public class MainActivity extends AppCompatActivity
             ((CustomHideBottomViewOnScrollBehavior) Objects.requireNonNull(layoutParams.getBehavior())).slideDown(findViewById(R.id.bottom_app_bar));
             actionBar.hide();
         }
+        //set behaviour back to normal
+        layoutParams.setBehavior(b);
     }
 
 
@@ -202,11 +207,11 @@ public class MainActivity extends AppCompatActivity
 
 
     //New note, no need to add Bundle info
-    public void NewNote(){
+    public void NewFragment(Fragment f){
         android.support.v4.app.FragmentManager man = getSupportFragmentManager();
         FragmentTransaction transaction = man.beginTransaction();
-        NoteEditor noteEditor = new NoteEditor();
-        transaction.replace(R.id.fragment, noteEditor);
+        //NoteEditor noteEditor = new NoteEditor();
+        transaction.replace(R.id.fragment, f);
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -215,6 +220,7 @@ public class MainActivity extends AppCompatActivity
 
     //Change the bot bar icons to edit mode
     public void ChangeBar(int type){
+        ShowBottomAppBar(true);
         switch (type){
             case 1: //Note editor
                 if(defaultNavigationIcon == null)
@@ -227,11 +233,11 @@ public class MainActivity extends AppCompatActivity
                 // Replace the action menu
                 ((BottomAppBar)toolbarBot).replaceMenu(R.menu.main);
                 // Change FAB icon
-                fab.setImageResource(R.drawable.ic_reply_white_24dp);
+                fab.setImageResource(R.drawable.ic_save_white_24dp);
                 //show back button (it was gone)
                 back.setVisibility(View.VISIBLE);
                 break;
-            case 2: //Calendar
+            case 2: //CalendarFragment
                 break;
             default: //Basic
                 toolbarBot.setNavigationIcon(defaultNavigationIcon);
@@ -239,6 +245,11 @@ public class MainActivity extends AppCompatActivity
                 ((BottomAppBar)toolbarBot).replaceMenu(R.menu.bottom_bar_right);
                 fab.setImageResource(R.drawable.ic_add_white_24dp);
                 back.setVisibility(View.GONE);
+                //Apparently the menu bar disappear if I don't "refresh" it (android bug?)
+                ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                        this, drawer, toolbarBot, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                drawer.addDrawerListener(toggle);
+                toggle.syncState();
                 break;
         }
     }
@@ -288,7 +299,7 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
 
-            case R.id.action_settings:
+            case R.id.action_priority:
                 return true;
             default:
                 Log.d("TEST", String.valueOf(item.getItemId()));
@@ -299,26 +310,22 @@ public class MainActivity extends AppCompatActivity
     }
 
     //Left menu (the hidden one)
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-            //Toast.makeText(this, "Share!", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.nav_send) {
-
+        switch (id){
+            case R.id.nav_calendar:
+                //go to calendar fragment
+                NewFragment(new CalendarFragment());
+                break;
+            case  R.id.nav_graphs:
+                //go to graphs fragment
+                break;
+            case R.id.nav_settings:
+                //go to settings fragment
+                break;
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
