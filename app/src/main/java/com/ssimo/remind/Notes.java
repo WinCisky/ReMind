@@ -1,11 +1,13 @@
 package com.ssimo.remind;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,26 @@ public class Notes extends Fragment {
         myRecycleView = v.findViewById(R.id.my_recycler_view);
 
         //TODO: read info from local DB
+
+        DBHelper dbhInstance = MainActivity.getDBHelper();
+        Cursor cursor = dbhInstance.getNotes();
+        cursor.moveToFirst();
+        int instances = 0;
+        while (!cursor.isAfterLast()) {
+            instances++;
+            int id = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_ID));
+            String title = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_NOTE_TITLE));
+            String description = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_NOTE_DESCRIPTION));
+            String date = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_DATE));
+            int className = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_CLASS));
+            int priority = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_PRIORITY));
+            int status = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_STATUS));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        Log.d("TEST", "There are " + instances + " instances");
+
+
         for(int i = 0; i <= 10; i++){
             //memo_texts.add("memo text value is : " + i);
             memo_days_left.add(String.valueOf((int)(Math.random() * 10) + 1)); //some random numbers

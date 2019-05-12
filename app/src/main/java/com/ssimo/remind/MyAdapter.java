@@ -18,11 +18,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Random;
 
 //Recycle view
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {

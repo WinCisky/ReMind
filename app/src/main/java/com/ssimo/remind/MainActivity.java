@@ -41,7 +41,12 @@ public class MainActivity extends AppCompatActivity
         View.OnClickListener,
         FragmentManager.OnBackStackChangedListener{
 
-    FloatingActionButton fab;
+    //fab
+    private static FloatingActionButton fab;
+    //db
+    private static DBHelper dbh;
+
+
     Toolbar toolbarTop, toolbarBot;
     DrawerLayout drawer;
     NavigationView navigationView;
@@ -54,6 +59,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //DB initialization (needs to be set before invocation ;)
+        dbh = new DBHelper(this);
+
         //set the main activity to lunch on startup
         setContentView(R.layout.activity_main);
 
@@ -97,6 +106,14 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
 
+    //gives the db helper instance
+    public static DBHelper getDBHelper() {
+        return dbh;
+    }
+    //gives the db helper instance
+    public static FloatingActionButton getFab() {
+        return fab;
+    }
 
     //Click listener (just used by fab
     @Override
@@ -240,6 +257,7 @@ public class MainActivity extends AppCompatActivity
             case 2: //CalendarFragment
                 break;
             default: //Basic
+                fab.setOnClickListener(this);
                 toolbarBot.setNavigationIcon(defaultNavigationIcon);
                 ((BottomAppBar)toolbarBot).setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
                 ((BottomAppBar)toolbarBot).replaceMenu(R.menu.bottom_bar_right);

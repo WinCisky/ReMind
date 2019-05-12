@@ -6,14 +6,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class CalendarFragment extends Fragment {
@@ -31,6 +34,11 @@ public class CalendarFragment extends Fragment {
         List<EventDay> events = new ArrayList<>();
 
         Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ITALY);
+        String strDate = dateFormat.format(date);
+        //Toast.makeText(v.getContext(), strDate, Toast.LENGTH_SHORT).show(); //show date (works fine)
+
         //calendar.set(2019,4,13);
         calendar.add(Calendar.DATE, 1); //tomorrow
         events.add(new EventDay(calendar, R.drawable.ic_note_description_black_24dp));
