@@ -49,7 +49,42 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    long insertNewNote(String title, String description, String date, int priority, int className, int status) {
+    long insertNewNote(int id, String title, String description, String date, int priority, int className, int status) {
+        //before inserting I need to check if there's already a note with this id
+        if(!existNote(id)){
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_STATUS, status);
+            cv.put(COLUMN_NOTE_TITLE, title);
+            cv.put(COLUMN_NOTE_DESCRIPTION, description);
+            cv.put(COLUMN_DATE, date);
+            cv.put(COLUMN_PRIORITY, priority);
+            cv.put(COLUMN_CLASS, className);
+
+            return getWritableDatabase().insert(TABLE_NOTES, null, cv);
+        }else{
+            //update the note
+            return UpdateNote(id, title, description, date, priority, className, status);
+        }
+
+    }
+
+    Cursor getNotes() {
+        return getWritableDatabase().query(TABLE_NOTES, null, null, null, null, null, null);
+    }
+
+    Cursor getOneNote(int _id) {
+        return getWritableDatabase().query(TABLE_NOTES, null, COLUMN_ID + "=?", new String[] { String.valueOf(_id) }, null, null, null);
+    }
+
+    private boolean existNote(int _id) {
+        Cursor c = getWritableDatabase().query(TABLE_NOTES, new String[] {COLUMN_ID},COLUMN_ID + "=?", new String[] { String.valueOf(_id) },null,null,null);
+        if (c.getCount() <= 0)
+            return false;
+        c.close();
+        return true;
+    }
+
+    private int UpdateNote(int _id, String title, String description, String date, int priority, int className, int status){
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_STATUS, status);
         cv.put(COLUMN_NOTE_TITLE, title);
@@ -57,12 +92,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_DATE, date);
         cv.put(COLUMN_PRIORITY, priority);
         cv.put(COLUMN_CLASS, className);
-
-        return getWritableDatabase().insert(TABLE_NOTES, null, cv);
-    }
-
-    Cursor getNotes() {
-        return getWritableDatabase().query(TABLE_NOTES, null, null, null, null, null, null);
+        return getWritableDatabase().update(TABLE_NOTES, cv, COLUMN_ID + "=?", new String[]{String.valueOf(_id)});
     }
 
     /*

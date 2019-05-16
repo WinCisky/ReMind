@@ -12,7 +12,7 @@
     <string name="action_archieve">Archieve</string>
     <string name="sample_image_description">This is a sample image</string>
     <string name="text_sample">Your note title is…</string>
-    <string name="lorem_ipsum">You should place your note here…</string>
+    <string name="lorem_ipsum">You should place your note description here…</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="back">Back</string>
     <string name="tomorrow">I\'ll do it tomorrow</string>

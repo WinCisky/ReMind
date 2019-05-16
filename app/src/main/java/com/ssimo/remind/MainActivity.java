@@ -154,7 +154,6 @@ public class MainActivity extends AppCompatActivity
             ChangeBotBar(0);
             //hide back button
             back.setVisibility(View.GONE);
-            //TODO: I need to update the recycleview if there has been changes
         }
     }
 
@@ -177,7 +176,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    //TODO: bottom app bar isn't showing if it was hidden
     //Show or hide the bottom app bar
     public void ShowBottomAppBar(boolean show){
         //copy the original behaviour

@@ -26,13 +26,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private ArrayList<String> mDatasetTexts;
     private ArrayList<String> mDatasetDaysLeft;
     //private ArrayList<String> mDatasetImages;
+    private ArrayList<Integer> mDatasetId;
     private Context mContext;
 
-    MyAdapter(Context mContext, ArrayList<String> mDatasetTexts, ArrayList<String> mDatasetDaysLeft) {
+    MyAdapter(Context mContext, ArrayList<String> mDatasetTexts, ArrayList<String> mDatasetDaysLeft, ArrayList<Integer> mDatasetId) {
         this.mDatasetTexts = mDatasetTexts;
         this.mDatasetDaysLeft = mDatasetDaysLeft;
         //this.mDatasetImages = mDatasetImages;
         this.mContext = mContext;
+        this.mDatasetId = mDatasetId;
     }
 
     // Provide a reference to the views for each data item
@@ -51,10 +53,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(ArrayList<String> mDatasetTexts, ArrayList<String> mDatasetDaysLeft) {
+    public MyAdapter(ArrayList<String> mDatasetTexts, ArrayList<String> mDatasetDaysLeft, ArrayList<Integer> mDatasetId) {
         this.mDatasetTexts = mDatasetTexts;
         this.mDatasetDaysLeft = mDatasetDaysLeft;
         //this.mDatasetImages = mDatasetImages;
+        this.mDatasetId = mDatasetId;
     }
 
     // Create new views (invoked by the layout manager)
@@ -108,7 +111,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
                 NoteEditor noteEditor = new NoteEditor();
                 Bundle bundle = new Bundle();
-                bundle.putInt("ID", holder.getAdapterPosition()); //TODO: check if position is correct or if I need to use holder.getAdapterPosition() instead
+                bundle.putInt("ID", mDatasetId.get(holder.getAdapterPosition()));
                 noteEditor.setArguments(bundle);
                 activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment, noteEditor).addToBackStack(null).commit();
             }
