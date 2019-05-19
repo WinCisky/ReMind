@@ -37,7 +37,7 @@ public class CalendarFragment extends Fragment {
 
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ITALY);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ITALY);
         String strDate = dateFormat.format(date);
         //Toast.makeText(v.getContext(), strDate, Toast.LENGTH_SHORT).show(); //show date (works fine)
 

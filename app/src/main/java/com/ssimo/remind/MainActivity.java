@@ -1,5 +1,6 @@
 package com.ssimo.remind;
 
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -45,16 +46,22 @@ public class MainActivity extends AppCompatActivity
     private static FloatingActionButton fab;
     //db
     private static DBHelper dbh;
+    //bottom action bar
+    private static Toolbar bab;
+    //fragment manager
+    private static FragmentManager fm;
+    //preference editor
+    private static SharedPreferences notePrefs;
 
 
     Toolbar toolbarTop, toolbarBot;
     DrawerLayout drawer;
     NavigationView navigationView;
-    ActionBar actionBar;
     ImageButton back;
     CoordinatorLayout.LayoutParams layoutParams;
     CoordinatorLayout.Behavior behavior;
     Drawable defaultNavigationIcon;
+    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +86,7 @@ public class MainActivity extends AppCompatActivity
         toolbarBot = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(toolbarBot);
         actionBar = getSupportActionBar();
+        bab = toolbarBot;
 
         //get original bot bar behaviour
         layoutParams = (CoordinatorLayout.LayoutParams) toolbarBot.getLayoutParams();
@@ -104,15 +112,41 @@ public class MainActivity extends AppCompatActivity
 
         //back stack listener
         getSupportFragmentManager().addOnBackStackChangedListener(this);
+
+        fm = getSupportFragmentManager();
+
+        notePrefs = getSharedPreferences("myPrefs",MODE_PRIVATE);
     }
 
     //gives the db helper instance
     public static DBHelper getDBHelper() {
         return dbh;
     }
-    //gives the db helper instance
+    //gives the fab instance
     public static FloatingActionButton getFab() {
         return fab;
+    }
+    //gives the bottom app bar instance
+    public static Toolbar getActBar() {
+        return bab;
+    }
+    //gives the fragment manager instance
+    public static FragmentManager getFragManager() {
+        return fm;
+    }
+    //edits a shared pref value
+    public static void setNotePrefs(String key, String value){ //string
+        notePrefs.edit().putString(key, value).apply();
+    }
+    public static void setNotePrefs(String key, int value){ //int
+        notePrefs.edit().putInt(key, value).apply();
+    }
+    //gets a shared pref value
+    public static String getNotePrefs(String key, String defaultValue){ //string
+        return notePrefs.getString(key, defaultValue);
+    }
+    public static int getNotePrefs(String key, int defaultValue){ //int
+        return notePrefs.getInt(key, defaultValue);
     }
 
     //Click listener (just used by fab
@@ -304,6 +338,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.bottom_bar_right, menu);
+
         return true;
     }
 

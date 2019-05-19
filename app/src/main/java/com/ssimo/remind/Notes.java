@@ -53,7 +53,7 @@ public class Notes extends Fragment {
             int priority = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_PRIORITY));
             int status = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_STATUS));
             memo_texts.add(title);
-            DateFormat df = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ITALY);
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ITALY);
             Date designedDate = Calendar.getInstance().getTime();
             try {
                 designedDate = df.parse(date);
@@ -62,8 +62,19 @@ public class Notes extends Fragment {
             }
             long startTime = Calendar.getInstance().getTime().getTime();
             long endTime = designedDate.getTime();
+
+
+            //Log.d("TIME","start: " + df.format(Calendar.getInstance().getTime().getTime()));
+            //Log.d("TIME","end: " + df.format(endTime));
+
             long diffTime = endTime - startTime;
             long diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+            if(diffTime > 0) //if there's more than 1 day left add 1 day
+                diffDays++;
+            else if(diffTime < 0) //instead of negative numbers
+                diffDays = 0;
+
             memo_days_left.add(String.valueOf(diffDays));
             memo_id.add(id);
             cursor.moveToNext();
