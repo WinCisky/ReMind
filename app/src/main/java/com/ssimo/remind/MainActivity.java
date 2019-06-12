@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -380,25 +381,40 @@ public class MainActivity extends AppCompatActivity
                 alert1.show();
                 return true;
             case R.id.action_class:
-                //TODO: change classes names
-                SharedPreferences sharedPref2 = getPreferences(Context.MODE_PRIVATE);
-                final boolean[] values2 = { true, true, true};
-                for (int i = 0; i < 3; i++){
-                    values2[i] = sharedPref2.getBoolean("selected_class"+i, true);
+                //get classes from db
+                DBHelper dbhInstance = getDBHelper();
+                Cursor cursor = dbhInstance.getClasses();
+                cursor.moveToFirst();
+                final String[] classes = new String[cursor.getCount()];
+                final int[] classesID = new int[cursor.getCount()];
+                int instances = 0;
+                while (!cursor.isAfterLast()) {
+                    int id = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_ID));
+                    String className = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_NAME));
+                    classes[instances] = className;
+                    classesID[instances] = id;
+                    cursor.moveToNext();
+                    instances++;
                 }
-                final CharSequence[] items2 = {"Class1", "Class2", "Class3"};
+                cursor.close();
+                SharedPreferences sharedPref2 = getPreferences(Context.MODE_PRIVATE);
+                final boolean[] values2 = new boolean[cursor.getCount()];
+                for (int i = 0; i < cursor.getCount(); i++){
+                    values2[i] = sharedPref2.getBoolean("selected_class"+classesID[i], true);
+                }
+                //final CharSequence[] items2 = classes;
 
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
                 builder2.setTitle("Select classes to show");
-                builder2.setMultiChoiceItems(items2, values2, new DialogInterface.OnMultiChoiceClickListener() {
+                builder2.setMultiChoiceItems(classes, values2, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
                         if(isChecked)
-                            editor.putBoolean("selected_class" + which, true);
+                            editor.putBoolean("selected_class" + classesID[which], true);
                         else
-                            editor.putBoolean("selected_class" + which, false);
+                            editor.putBoolean("selected_class" + classesID[which], false);
                         editor.commit();
                     }
                 });
@@ -407,7 +423,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.action_sort:
                 SharedPreferences sharedPref3 = getPreferences(Context.MODE_PRIVATE);
-                int sel_val = sharedPref3.getInt("selected_sorting", -1);
+                int sel_val = sharedPref3.getInt("selected_sorting", 2);
                 final CharSequence[] items3 = {"Priority", "Date", "Insertion Order"};
 
                 AlertDialog.Builder builder3 = new AlertDialog.Builder(this);

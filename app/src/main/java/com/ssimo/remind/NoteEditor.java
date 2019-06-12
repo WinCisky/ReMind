@@ -197,15 +197,31 @@ public class NoteEditor extends Fragment implements View.OnClickListener, Toolba
     }
 
     public Dialog onCreateClassDialog() {
-        //TODO: obtain classes from db
+        //TODO: obtain classes from db and change R.array.class_array
+        //get classes from db
+        DBHelper dbhInstance = MainActivity.getDBHelper();
+        Cursor cursor = dbhInstance.getClasses();
+        cursor.moveToFirst();
+        final String[] classes = new String[cursor.getCount()];
+        final int[] classesID = new int[cursor.getCount()];
+        int instances = 0;
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_ID));
+            String className = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_NAME));
+            classes[instances] = className;
+            classesID[instances] = id;
+            cursor.moveToNext();
+            instances++;
+        }
+        cursor.close();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Set note class")
                 .setItems(R.array.class_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // The 'which' argument contains the index position
                         // of the selected item
-                        MainActivity.setNotePrefs("class", which); //0-> home, 1-> personal, 2-> university, 3-> job
-                        Toast.makeText(getContext(), getResources().obtainTypedArray(R.array.class_array).getText(which), Toast.LENGTH_SHORT).show();
+                        MainActivity.setNotePrefs("class", classesID[which]); //0-> home, 1-> personal, 2-> university, 3-> job
+                        Toast.makeText(getContext(), classes[which], Toast.LENGTH_SHORT).show();
                     }
                 });
         return builder.create();
