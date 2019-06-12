@@ -1,5 +1,8 @@
 package com.ssimo.remind;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -28,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.Objects;
 
@@ -351,9 +355,78 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
 
             case R.id.action_priority:
+                SharedPreferences sharedPref1 = getPreferences(Context.MODE_PRIVATE);
+                final boolean[] values1 = { true, true, true};
+                for (int i = 0; i < 3; i++){
+                    values1[i] = sharedPref1.getBoolean("selected_priority"+i, true);
+                }
+                final CharSequence[] items1 = {"High", "Normal", "Low"};
+
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+                builder1.setTitle("Select priorities");
+                builder1.setMultiChoiceItems(items1, values1, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        if(isChecked)
+                            editor.putBoolean("selected_priority" + which, true);
+                        else
+                            editor.putBoolean("selected_priority" + which, false);
+                        editor.commit();
+                    }
+                });
+                AlertDialog alert1 = builder1.create();
+                alert1.show();
                 return true;
+            case R.id.action_class:
+                //TODO: change classes names
+                SharedPreferences sharedPref2 = getPreferences(Context.MODE_PRIVATE);
+                final boolean[] values2 = { true, true, true};
+                for (int i = 0; i < 3; i++){
+                    values2[i] = sharedPref2.getBoolean("selected_class"+i, true);
+                }
+                final CharSequence[] items2 = {"Class1", "Class2", "Class3"};
+
+                AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+                builder2.setTitle("Select classes to show");
+                builder2.setMultiChoiceItems(items2, values2, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        if(isChecked)
+                            editor.putBoolean("selected_class" + which, true);
+                        else
+                            editor.putBoolean("selected_class" + which, false);
+                        editor.commit();
+                    }
+                });
+                AlertDialog alert2 = builder2.create();
+                alert2.show();
+                break;
+            case R.id.action_sort:
+                SharedPreferences sharedPref3 = getPreferences(Context.MODE_PRIVATE);
+                int sel_val = sharedPref3.getInt("selected_sorting", -1);
+                final CharSequence[] items3 = {"Priority", "Date", "Insertion Order"};
+
+                AlertDialog.Builder builder3 = new AlertDialog.Builder(this);
+                builder3.setTitle("Select sorting");
+                builder3.setSingleChoiceItems(items3, sel_val, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        Toast.makeText(getApplicationContext(), items3[item],
+                                Toast.LENGTH_SHORT).show();
+                        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putInt("selected_sorting", item);
+                        editor.commit();
+                    }
+                });
+                AlertDialog alert3 = builder3.create();
+                alert3.show();
+                break;
             default:
-                Log.d("TEST", String.valueOf(item.getItemId()));
+                Log.d("ERROR", String.valueOf(item.getItemId()));
                 break;
         }
 

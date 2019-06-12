@@ -29,7 +29,7 @@ public class CalendarFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_calendar, container, false);
 
-        //TODO: check befor adding another calendar fragment to the stack
+        //TODO: check before adding another calendar fragment to the stack
         //TODO: add items to calendar
         //TODO: add calendar functionality (as tap on day to look at notes or create a new note, ...)
         //CalendarView cal = v.findViewById(R.id.calendar);

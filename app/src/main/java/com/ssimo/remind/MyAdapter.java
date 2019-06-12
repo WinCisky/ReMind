@@ -158,7 +158,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
                         break;
                     case R.id.reminder_completed:
-                        Toast.makeText(v.getContext(), "completed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), "completed", Toast.LENGTH_SHORT).show();//TODO: if ongiong, or start if not started
 
                         break;
                 }

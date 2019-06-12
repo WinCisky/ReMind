@@ -15,6 +15,6 @@
     <item
         android:id="@+id/action_class"
         android:icon="@drawable/ic_class_white_24dp"
-        android:title="@string/priority"
+        android:title="@string/class_sel"
         app:showAsAction="ifRoom" />
 </menu>

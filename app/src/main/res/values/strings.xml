@@ -26,4 +26,5 @@
     <string name="priority">Priority</string>
     <string name="taskclass">TaskClass</string>
     <string name="sort">Sort</string>
+    <string name="class_sel">Class</string>
 </resources>

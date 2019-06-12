@@ -197,6 +197,7 @@ public class NoteEditor extends Fragment implements View.OnClickListener, Toolba
     }
 
     public Dialog onCreateClassDialog() {
+        //TODO: obtain classes from db
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Set note class")
                 .setItems(R.array.class_array, new DialogInterface.OnClickListener() {
