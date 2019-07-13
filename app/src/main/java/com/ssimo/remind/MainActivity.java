@@ -3,6 +3,7 @@ package com.ssimo.remind;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Rect;
@@ -347,6 +348,16 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void ReloadActivityWithoutAnimations(AlertDialog alert){
+        //go back to main activity and refresh recycle view
+        Intent i = new Intent(alert.getContext(), MainActivity.class);
+        //non back stack of activity
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //start new activity
+        startActivity(i);
+        overridePendingTransition(0,0);
+    }
+
     //listener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -377,8 +388,14 @@ public class MainActivity extends AppCompatActivity
                         editor.commit();
                     }
                 });
-                AlertDialog alert1 = builder1.create();
+                final AlertDialog alert1 = builder1.create();
                 alert1.show();
+                alert1.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        ReloadActivityWithoutAnimations(alert1);
+                    }
+                });
                 return true;
             case R.id.action_class:
                 //get classes from db
@@ -418,8 +435,14 @@ public class MainActivity extends AppCompatActivity
                         editor.commit();
                     }
                 });
-                AlertDialog alert2 = builder2.create();
+                final AlertDialog alert2 = builder2.create();
                 alert2.show();
+                alert2.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        ReloadActivityWithoutAnimations(alert2);
+                    }
+                });
                 break;
             case R.id.action_sort:
                 SharedPreferences sharedPref3 = getPreferences(Context.MODE_PRIVATE);
@@ -438,8 +461,14 @@ public class MainActivity extends AppCompatActivity
                         editor.commit();
                     }
                 });
-                AlertDialog alert3 = builder3.create();
+                final AlertDialog alert3 = builder3.create();
                 alert3.show();
+                alert3.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        ReloadActivityWithoutAnimations(alert3);
+                    }
+                });
                 break;
             default:
                 Log.d("ERROR", String.valueOf(item.getItemId()));

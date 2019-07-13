@@ -1,5 +1,7 @@
 package com.ssimo.remind;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -33,6 +37,24 @@ public class Notes extends Fragment{
     //private ArrayList<String> memo_images = new ArrayList<>();
     private ArrayList<Integer> memo_id = new ArrayList<>();
 
+    private int[] GetClasses(DBHelper dbhInstance){
+        Cursor cursor = dbhInstance.getClasses();
+        cursor.moveToFirst();
+        final String[] classes = new String[cursor.getCount()];
+        final int[] classesID = new int[cursor.getCount()];
+        int instances = 0;
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_ID));
+            String className = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_NAME));
+            classes[instances] = className;
+            classesID[instances] = id;
+            cursor.moveToNext();
+            instances++;
+        }
+        cursor.close();
+        return classesID;
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -40,9 +62,26 @@ public class Notes extends Fragment{
         v = inflater.inflate(R.layout.fragment_notes, container, false);
         myRecycleView = v.findViewById(R.id.my_recycler_view);
 
-        //TODO: add calendar, priority, status and class functionality
 
         DBHelper dbhInstance = MainActivity.getDBHelper();
+
+        //TODO: add calendar, priority, status and class functionality
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        int highScore = sharedPref.getInt("", -1);
+        boolean priorityLow = sharedPref.getBoolean("selected_priority2",true);
+        boolean priorityNormal = sharedPref.getBoolean("selected_priority1",true);
+        boolean priorityHigh = sharedPref.getBoolean("selected_priority0",true);
+        int[] classesIDs = GetClasses(dbhInstance);
+        List<Boolean> classesList = new ArrayList<>();
+        for (int _class: classesIDs) {
+            classesList.add(sharedPref.getBoolean("selected_priority0",true));
+        }
+        Boolean[] classes = (Boolean[]) classesList.toArray();
+        if(classes[0]){
+
+        }
+
+
         Cursor cursor = dbhInstance.getNotes();
         cursor.moveToFirst();
         int instances = 0;
