@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -85,7 +86,6 @@ public class DBHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_DATE, date);
             cv.put(COLUMN_PRIORITY, priority);
             cv.put(COLUMN_CLASS, className);
-
             return getWritableDatabase().insert(TABLE_NOTES, null, cv);
         }else{
             //update the note
@@ -98,8 +98,45 @@ public class DBHelper extends SQLiteOpenHelper {
         return getWritableDatabase().query(TABLE_CLASSES, null, null, null, null, null, null);
     }
 
-    Cursor getNotes() {
-        return getWritableDatabase().query(TABLE_NOTES, null, null, null, null, null, null);
+    private String[] classesNames(){
+        Cursor cursor = getClasses();
+        cursor.moveToFirst();
+        final String[] classes = new String[cursor.getCount()];
+        final int[] classesID = new int[cursor.getCount()];
+        int instances = 0;
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_ID));
+            String className = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_NAME));
+            classes[instances] = className;
+            classesID[instances] = id;
+            cursor.moveToNext();
+            instances++;
+        }
+        return classes;
+    }
+
+    Cursor getNotes(int sorting, boolean[] priority, boolean[] classes, int[] classesIDs) {
+
+
+        //sorting -> 0 : order by priority
+        //sorting -> 1 : order by date
+        //sorting -> 2 : do nothing
+        String selection = "";
+        for (int i = 0; i < classes.length; i++) {
+            if(classes[i]){
+                if(i>0)
+                    selection += " AND ";
+                selection += COLUMN_CLASS + "=" + classesIDs[i];
+            }
+        }
+        selection += " AND " + COLUMN_CLASS + "=0";
+        if(sorting == 0){
+            return getWritableDatabase().query(TABLE_NOTES, null, selection, null, null, null, COLUMN_PRIORITY + " DESC");
+        }else if(sorting == 1){
+            return getWritableDatabase().query(TABLE_NOTES, null, selection, null, null, null, COLUMN_DATE);
+        }else {
+            return getWritableDatabase().query(TABLE_NOTES, null, selection, null, null, null, null);
+        }
     }
 
     //TODO: test

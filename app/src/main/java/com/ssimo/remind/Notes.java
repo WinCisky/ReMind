@@ -67,22 +67,19 @@ public class Notes extends Fragment{
 
         //TODO: add calendar, priority, status and class functionality
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        int highScore = sharedPref.getInt("", -1);
-        boolean priorityLow = sharedPref.getBoolean("selected_priority2",true);
-        boolean priorityNormal = sharedPref.getBoolean("selected_priority1",true);
-        boolean priorityHigh = sharedPref.getBoolean("selected_priority0",true);
+        int sorting = sharedPref.getInt("selected_sorting", -1);
+        boolean[] selPriority = new boolean[]{
+            sharedPref.getBoolean("selected_priority2",true),
+            sharedPref.getBoolean("selected_priority1",true),
+            sharedPref.getBoolean("selected_priority0",true)
+        };
         int[] classesIDs = GetClasses(dbhInstance);
-        List<Boolean> classesList = new ArrayList<>();
-        for (int _class: classesIDs) {
-            classesList.add(sharedPref.getBoolean("selected_priority0",true));
-        }
-        Boolean[] classes = (Boolean[]) classesList.toArray();
-        if(classes[0]){
-
+        boolean[] selClasses = new boolean[classesIDs.length];
+        for (int i=0; i< classesIDs.length; i++){
+            selClasses[i] = sharedPref.getBoolean("selected_class"+classesIDs[i],true);
         }
 
-
-        Cursor cursor = dbhInstance.getNotes();
+        Cursor cursor = dbhInstance.getNotes(sorting, selPriority, selClasses, classesIDs);
         cursor.moveToFirst();
         int instances = 0;
         while (!cursor.isAfterLast()) {
