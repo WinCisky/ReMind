@@ -115,6 +115,23 @@ public class DBHelper extends SQLiteOpenHelper {
         return classes;
     }
 
+    private int[] AllClassesIDs(){
+        Cursor cursor = getClasses();
+        cursor.moveToFirst();
+        final String[] classes = new String[cursor.getCount()];
+        final int[] classesID = new int[cursor.getCount()];
+        int instances = 0;
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_ID));
+            String className = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CLASSES_NAME));
+            classes[instances] = className;
+            classesID[instances] = id;
+            cursor.moveToNext();
+            instances++;
+        }
+        return classesID;
+    }
+
     Cursor getNotes(int sorting, boolean[] priority, boolean[] classes, int[] classesIDs) {
 
 
@@ -122,14 +139,39 @@ public class DBHelper extends SQLiteOpenHelper {
         //sorting -> 1 : order by date
         //sorting -> 2 : do nothing
         String selection = "";
+        boolean first = true;
         for (int i = 0; i < classes.length; i++) {
             if(classes[i]){
-                if(i>0)
-                    selection += " AND ";
+                if(!first)
+                    selection += " OR ";
+                else {
+                    first = false;
+                    selection += "(";
+                }
                 selection += COLUMN_CLASS + "=" + classesIDs[i];
             }
         }
-        selection += " AND " + COLUMN_CLASS + "=0";
+        if(!first)
+            selection += ")";
+        boolean first2=true;
+        String sel2 = "";
+        for (int i =0; i < priority.length; i++) {
+            if(priority[i]) {
+                if (!first2)
+                    sel2 += " OR ";
+                else {
+                    first2 = false;
+                    sel2 += "(";
+                }
+                sel2 += COLUMN_PRIORITY + "=" + i;
+            }
+        }
+        if(!first2)
+            sel2 += ")";
+
+        if(!first && !first2)
+            selection += " AND " + sel2;
+
         if(sorting == 0){
             return getWritableDatabase().query(TABLE_NOTES, null, selection, null, null, null, COLUMN_PRIORITY + " DESC");
         }else if(sorting == 1){
