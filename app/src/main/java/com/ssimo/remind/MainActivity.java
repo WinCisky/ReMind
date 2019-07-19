@@ -1,15 +1,27 @@
 package com.ssimo.remind;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.behavior.HideBottomViewOnScrollBehavior;
 import android.support.design.bottomappbar.BottomAppBar;
@@ -19,6 +31,8 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -35,6 +49,8 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Objects;
 
 interface OnKeyboardVisibilityListener {
@@ -58,6 +74,8 @@ public class MainActivity extends AppCompatActivity
     private static FragmentManager fm;
     //preference editor
     private static SharedPreferences notePrefs;
+
+    private static Object as;
 
 
     Toolbar toolbarTop, toolbarBot;
@@ -102,7 +120,6 @@ public class MainActivity extends AppCompatActivity
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(this);
 
-
         //Left menu
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -121,7 +138,10 @@ public class MainActivity extends AppCompatActivity
 
         fm = getSupportFragmentManager();
 
+        as = getSystemService(ALARM_SERVICE);
+
         notePrefs = getSharedPreferences("myPrefs",MODE_PRIVATE);
+
     }
 
     //gives the db helper instance
@@ -153,6 +173,9 @@ public class MainActivity extends AppCompatActivity
     }
     public static int getNotePrefs(String key, int defaultValue){ //int
         return notePrefs.getInt(key, defaultValue);
+    }
+    public static Object getAlarmService(){
+        return as;
     }
 
     //Click listener (just used by fab
@@ -348,15 +371,17 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void ReloadActivityWithoutAnimations(AlertDialog alert){
+    private void ReloadActivityWithoutAnimations(Context context){
         //go back to main activity and refresh recycle view
-        Intent i = new Intent(alert.getContext(), MainActivity.class);
+        Intent i = new Intent(context, MainActivity.class);
         //non back stack of activity
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //start new activity
         startActivity(i);
         overridePendingTransition(0,0);
     }
+
+
 
     //listener
     @Override
@@ -393,7 +418,7 @@ public class MainActivity extends AppCompatActivity
                 alert1.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        ReloadActivityWithoutAnimations(alert1);
+                        ReloadActivityWithoutAnimations(alert1.getContext());
                     }
                 });
                 return true;
@@ -440,7 +465,7 @@ public class MainActivity extends AppCompatActivity
                 alert2.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        ReloadActivityWithoutAnimations(alert2);
+                        ReloadActivityWithoutAnimations(alert2.getContext());
                     }
                 });
                 break;
@@ -466,7 +491,7 @@ public class MainActivity extends AppCompatActivity
                 alert3.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        ReloadActivityWithoutAnimations(alert3);
+                        ReloadActivityWithoutAnimations(alert3.getContext());
                     }
                 });
                 break;

@@ -1,15 +1,33 @@
 package com.ssimo.remind;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +37,14 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+
+import static android.content.Context.ALARM_SERVICE;
 
 public class NoteEditor extends Fragment implements View.OnClickListener, Toolbar.OnMenuItemClickListener {
 
@@ -150,6 +171,23 @@ public class NoteEditor extends Fragment implements View.OnClickListener, Toolba
                 if (code != -1)
                     //Toast.makeText(v.getContext(), "Inserimento effettuato", Toast.LENGTH_LONG).show();
                     Log.d("TEST","Inserimento effettuato");
+
+
+                //calculate delay
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ITALY);
+                Date designedDate = Calendar.getInstance().getTime();
+                try {
+                    designedDate = df.parse(date);
+                } catch (ParseException e) {
+                    Log.e("TEST ERROR", "parse was wrong");
+                }
+                long startTime = Calendar.getInstance().getTime().getTime();
+                long endTime = designedDate.getTime();
+                long diffTime = endTime - startTime;
+
+
+                //add notification
+                handleNotification(getContext(), noteTitle, diffTime, myId);
             }
 
 
@@ -162,7 +200,6 @@ public class NoteEditor extends Fragment implements View.OnClickListener, Toolba
         }
         //else if(v.getId() == R.id.)
     }
-
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()){
@@ -179,6 +216,19 @@ public class NoteEditor extends Fragment implements View.OnClickListener, Toolba
 
         }
         return true;
+    }
+
+    private static void handleNotification(Context c, String description, long delay, int notificationID) {
+        //cancel old notification
+        NotificationManager mNotificationManager = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(notificationID);
+        //set new notification
+        Intent alarmIntent = new Intent(c, AlarmReceiver.class);
+        alarmIntent.putExtra("title", description);
+        alarmIntent.putExtra("id", notificationID);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) MainActivity.getAlarmService();
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + delay, pendingIntent);
     }
 
 

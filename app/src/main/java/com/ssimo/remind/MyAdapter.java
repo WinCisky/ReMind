@@ -1,7 +1,11 @@
 package com.ssimo.remind;
 
+import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -42,6 +47,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     // you provide access to all the views for a data item in a view holder
     static class MyViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
+        int noteID;
         TextView noteTitle, noteDaysLeft;
         RelativeLayout parentLayout;
         MyViewHolder(View v) {
@@ -85,6 +91,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         //set the text
         holder.noteTitle.setText(mDatasetTexts.get(holder.getAdapterPosition()));
 
+        holder.noteID = mDatasetId.get(holder.getAdapterPosition());
+
         //set the image (load from url)
         //Glide.with(mContext)
         //        .asBitmap()
@@ -119,16 +127,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         //Create the dialog
         final Dialog myDialog = new Dialog(mContext);
+        myDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         myDialog.setContentView(R.layout.quick_note_edit);
         TextView quick_title = myDialog.findViewById(R.id.reminder_title);
         quick_title.setText(holder.noteTitle.getText());
 
         Button tomorrow = myDialog.findViewById(R.id.reminder_tomorrow);
-        tomorrow.setOnClickListener(OnDialogClick(myDialog.findViewById(R.id.reminder_tomorrow), myDialog));
+        tomorrow.setOnClickListener(OnDialogClick(myDialog.findViewById(R.id.reminder_tomorrow), myDialog, holder.noteID));
         Button delete = myDialog.findViewById(R.id.reminder_delete);
-        delete.setOnClickListener(OnDialogClick(myDialog.findViewById(R.id.reminder_delete), myDialog));
+        delete.setOnClickListener(OnDialogClick(myDialog.findViewById(R.id.reminder_delete), myDialog, holder.noteID));
         Button completed = myDialog.findViewById(R.id.reminder_completed);
-        completed.setOnClickListener(OnDialogClick(myDialog.findViewById(R.id.reminder_completed), myDialog));
+        completed.setOnClickListener(OnDialogClick(myDialog.findViewById(R.id.reminder_completed), myDialog, holder.noteID));
 
         //on long click quick edit the note
         holder.parentLayout.setOnLongClickListener(new View.OnLongClickListener() {
@@ -143,7 +152,32 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     }
 
-    private View.OnClickListener OnDialogClick(View v, final Dialog dialog) {
+    private void ReloadActivityWithoutAnimations(Context context){
+        //go back to main activity and refresh recycle view
+        Intent i = new Intent(context, MainActivity.class);
+        //non back stack of activity
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        //start new activity
+        context.startActivity(i);
+        Activity activity = getActivity(context);
+        if (activity != null) {
+            activity.overridePendingTransition(0,0);
+        }else{
+            Log.d("CONTEXT", context.getClass().toString());
+        }
+    }
+
+    private Activity getActivity(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                return (Activity)context;
+            }
+            context = ((ContextWrapper)context).getBaseContext();
+        }
+        return null;
+    }
+
+    private View.OnClickListener OnDialogClick(View v, final Dialog dialog, final int id) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,15 +185,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     //TODO: add logic
                     case R.id.reminder_tomorrow:
                         Toast.makeText(v.getContext(), "tomorrow", Toast.LENGTH_SHORT).show();
+                        Log.d("ID:", ((String.valueOf(v.getId()))));
+                        AlarmReceiver.PostponeAction(id, new DBHelper(v.getContext()));
+                        ReloadActivityWithoutAnimations(v.getContext());
 
                         break;
                     case R.id.reminder_delete:
                         Toast.makeText(v.getContext(), "delete", Toast.LENGTH_SHORT).show();
-
+                        AlarmReceiver.EndAction(id, new DBHelper(v.getContext()));
+                        ReloadActivityWithoutAnimations(v.getContext());
                         break;
                     case R.id.reminder_completed:
                         Toast.makeText(v.getContext(), "completed", Toast.LENGTH_SHORT).show();//TODO: if ongiong, or start if not started
-
+                        AlarmReceiver.StartAction(id, new DBHelper(v.getContext()));
+                        ReloadActivityWithoutAnimations(v.getContext());
                         break;
                 }
                 dialog.dismiss(); //closes dialog

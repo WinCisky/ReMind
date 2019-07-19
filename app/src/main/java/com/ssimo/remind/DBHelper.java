@@ -172,6 +172,10 @@ public class DBHelper extends SQLiteOpenHelper {
         if(!first && !first2)
             selection += " AND " + sel2;
 
+        if(!first || !first2)
+            selection += " AND ";
+        selection += "(" + COLUMN_STATUS + "= 0 OR " + COLUMN_STATUS + "=1)";
+
         if(sorting == 0){
             return getWritableDatabase().query(TABLE_NOTES, null, selection, null, null, null, COLUMN_PRIORITY + " DESC");
         }else if(sorting == 1){
@@ -216,7 +220,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    private int UpdateNote(int _id, String title, String description, String date, int priority, int className, int status){
+    public int UpdateNote(int _id, String title, String description, String date, int priority, int className, int status){
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_STATUS, status);
         cv.put(COLUMN_NOTE_TITLE, title);
