@@ -516,10 +516,14 @@ public class MainActivity extends AppCompatActivity
                 break;
             case  R.id.nav_graphs:
                 //go to graphs fragment
+                Intent i = new Intent(this, Graph.class);
+                startActivity(i);
                 break;
+                /*
             case R.id.nav_settings:
                 //go to settings fragment
                 break;
+                */
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

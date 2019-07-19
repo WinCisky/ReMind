@@ -32,4 +32,6 @@ dependencies {
 
     //calendar
     implementation 'com.applandeo:material-calendar-view:1.4.0'
+    //graph
+    implementation 'com.jjoe64:graphview:4.2.2'
 }

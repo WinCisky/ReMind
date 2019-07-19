@@ -220,6 +220,16 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public int NotesAmount(){
+        Cursor c = getWritableDatabase().query(TABLE_NOTES, null, null, null, null, null, null);
+        return c.getCount();
+    }
+
+    public int NotesCompleted(String day){
+        Cursor c = getWritableDatabase().query(TABLE_NOTES, null, COLUMN_DATE + "=\"" + day + "\" AND " + COLUMN_STATUS + "=2", null, null, null, null);
+        return c.getCount();
+    }
+
     public int UpdateNote(int _id, String title, String description, String date, int priority, int className, int status){
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_STATUS, status);
